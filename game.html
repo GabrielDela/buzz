@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buzz Game - Host</title>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    * {
+      font-family: 'faktum', Arial, Helvetica, sans-serif;
+      text-transform: uppercase;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+
+      background-color: rgb(255, 242, 226);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #game {
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #join {
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      font-size: 18px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      font-size: 18px;
+      padding: 10px 15px;
+
+      background-color: #fbe216;
+
+      border: none;
+      box-shadow: 2px 2px 1px black;
+      width: max-content;
+    }
+
+    #create {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="game">
+    <h1>Buzz Game - Host</h1>
+    <div id="create">
+      <input type="text" id="code" placeholder="Room Code" />
+      <button class="btn" id="create-btn">Create Room</button>
+    </div>
+    <div id="lobby" style="display:none;">
+      <h2>Room Code:</h2>
+      <div id="room-code-display"></div>
+      <h2>Players:</h2>
+      <table id="players-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="players"></tbody>
+      </table>
+      <button class="btn" id="start-btn">Start Game</button>
+    </div>
+    <div id="queue" style="display:none;">
+      <h2>Queue:</h2>
+      <ul id="buzz-queue"></ul>
+      <button class="btn" id="validate-btn">Validate</button>
+      <button class="btn" id="reject-btn">Reject</button>
+      <button class="btn" id="next-round-btn">Next Round</button>
+    </div>
+  </div>
+
+
+  <script>
+    const socket = io();
+
+    document.getElementById('create-btn').addEventListener('click', () => {
+      const code = document.getElementById('code').value;
+      socket.emit('create-room', code);
+    });
+
+    socket.on('room-created', (code) => {
+      document.getElementById('create').style.display = 'none';
+      document.getElementById('lobby').style.display = 'block';
+
+      // Afficher le code en grand
+      const roomCodeDisplay = document.getElementById('room-code-display');
+      roomCodeDisplay.textContent = code;
+    });
+
+    socket.on('update-players', (players) => {
+      const playersTable = document.getElementById('players');
+      let show = players.filter(p => p.active === true);
+
+      playersTable.innerHTML = show
+        .map(player => `
+      <tr>
+        <td>${player.username}</td>
+        <td>${player.score}</td>
+      </tr>
+    `)
+        .join('');
+    });
+
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+      const code = document.getElementById('code').value;
+      socket.emit('start-game', code);
+      document.getElementById('queue').style.display = 'block';
+      document.getElementById('start-btn').style.display = 'none';
+
+      
+    });
+
+    socket.on('update-queue', (queue) => {
+      const queueList = document.getElementById('buzz-queue');
+      queueList.innerHTML = queue.map(q => `<li>${q.username}</li>`).join('');
+    });
+
+    document.getElementById('validate-btn').addEventListener('click', () => {
+      const code = document.getElementById('code').value;
+      socket.emit('validate', { code, success: true });
+    });
+
+    document.getElementById('reject-btn').addEventListener('click', () => {
+      const code = document.getElementById('code').value;
+      socket.emit('validate', { code, success: false });
+    });
+
+    document.getElementById('next-round-btn').addEventListener('click', () => {
+      const code = document.getElementById('code').value;
+      socket.emit('next-round', code);
+    });
+  </script>
+</body>
+
+</html>

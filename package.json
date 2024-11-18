@@ -1,0 +1,16 @@
+{
+  "name": "buzz",
+  "version": "1.0.0",
+  "description": "Yes we buzzzzzz",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "nodemon": "^3.1.7",
+    "socket.io": "^4.8.1"
+  }
+}

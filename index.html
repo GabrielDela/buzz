@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buzz Game</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * {
+      font-family: 'faktum', Arial, Helvetica, sans-serif;
+      text-transform: uppercase;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+
+      background-color: rgb(255, 242, 226);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #game {
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #join {
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      font-size: 18px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      font-size: 18px;
+      padding: 10px 15px;
+
+      background-color: #fbe216;
+
+      border: none;
+      box-shadow: 2px 2px 1px black;
+    }
+
+    #buzz-btn{
+      font-size: 76px;
+      padding: 20px 20px;
+      text-align: center;
+      width: 400px;
+      height: 400px;
+
+      background-color: #fbe216;
+
+      border: none;
+      box-shadow: 2px 2px 1px black;
+    }
+
+  </style>
+</head>
+
+<body id="body">
+  <div id="game">
+    <h1>Buzz Game</h1>
+    <h2 id="username-show"></h1>
+
+    <div id="join">
+      <input type="text" id="username" placeholder="Username" />
+      <input type="text" id="code" placeholder="Room Code" />
+      <button class="btn" id="join-btn">Join Room</button>
+    </div>
+    <div id="waiting" style="display:none;">
+      <p>En attente de l'hôte...</p>
+    </div>
+    <div id="gameplay" style="display:none;">
+      <button id="buzz-btn">Buzz!</button>
+    </div>
+  </div>
+
+  <script>
+    var username;
+    var code;
+
+    const socket = io();
+    const uuid = localStorage.getItem('uuid') ?? uuidv4();
+    localStorage.setItem('uuid', uuid);
+
+    document.getElementById('join-btn').addEventListener('click', () => {
+      username = document.getElementById('username').value;
+      code = document.getElementById('code').value;
+
+      document.getElementById('username-show').textContent = username;
+
+      socket.emit('join-room', { uuid, username, code });
+    });
+
+    socket.on('waiting-for-host', () => {
+      document.getElementById('join').style.display = 'none';
+      document.getElementById('waiting').style.display = 'block';
+    });
+
+    socket.on('game-started', () => {
+      document.getElementById('join').style.display = 'none';
+      document.getElementById('waiting').style.display = 'none';
+      document.getElementById('gameplay').style.display = 'block';
+    });
+
+    document.getElementById('buzz-btn').addEventListener('click', () => {
+      document.getElementById('body').style.background = "rgb(255, 226, 191)";
+      socket.emit('buzz', { uuid, code, username });
+    });
+    
+    socket.on('answered', () => {
+      document.getElementById('body').style.background = "rgb(255, 242, 226)";
+    });
+
+    socket.on('new-round', () => {
+      document.getElementById('body').style.background = "rgb(255, 242, 226)";
+    });
+
+    socket.on('game-ended', () => {
+      document.getElementById('username-show').textContent = "";
+      document.getElementById('gameplay').style.display = 'none';
+      document.getElementById('join').style.display = 'flex';
+      document.getElementById('waiting').style.display = 'none';
+      alert("La partie est terminée par l'hôte.");
+    });
+
+    function uuidv4() {
+      return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+        (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+      );
+    }
+  </script>
+</body>
+
+</html>
