@@ -15,7 +15,7 @@
       margin: 0;
       padding: 0;
       width: 100vw;
-      height: 100vh;
+      padding-top: 200px;
 
       display: flex;
 
@@ -39,25 +39,37 @@
     }
 
     input {
-      font-size: 18px;
-      padding: 10px 15px;
-      margin-bottom: 10px;
+      font-size: 48px;
+      padding: 20px 35px;
+      margin-bottom: 60px;
     }
 
     .btn {
-      font-size: 18px;
-      padding: 10px 15px;
+      font-size: 48px;
+      padding: 20px 35px;
 
       background-color: #fbe216;
 
       border: none;
-      box-shadow: 2px 2px 1px black;
-      width: max-content;
+      box-shadow: 4px 4px 0px black;
     }
 
     #create {
       display: flex;
       flex-direction: column;
+    }
+
+    
+    .title {
+      font-size: 80px;
+    }
+
+    #buzz-queue{
+      font-size: 46px;
+    }
+
+    .font-xl{
+      font-size: 48px;;
     }
   </style>
 
@@ -65,19 +77,19 @@
 
 <body>
   <div id="game">
-    <h1>Buzz Game - Host</h1>
+    <h1 class="title">Buzz Game - Host</h1>
     <div id="create">
       <input type="text" id="code" placeholder="Room Code" />
       <button class="btn" id="create-btn">Create Room</button>
     </div>
-    <div id="lobby" style="display:none;">
+    <div class="font-xl" id="lobby" style="display:none;">
       <h2>Room Code:</h2>
       <div id="room-code-display"></div>
       <h2>Players:</h2>
-      <table id="players-table">
+      <table class="font-xl" id="players-table">
         <thead>
           <tr>
-            <th>Username</th>
+            <th style="padding-right: 50px;">Username</th>
             <th>Score</th>
           </tr>
         </thead>
@@ -86,11 +98,13 @@
       <button class="btn" id="start-btn">Start Game</button>
     </div>
     <div id="queue" style="display:none;">
-      <h2>Queue:</h2>
+      <h2 class="font-xl">Queue:</h2>
       <ul id="buzz-queue"></ul>
-      <button class="btn" id="validate-btn">Validate</button>
-      <button class="btn" id="reject-btn">Reject</button>
-      <button class="btn" id="next-round-btn">Next Round</button>
+      <div style="display: flex; flex-direction: column;">
+        <button class="btn" style="margin-bottom: 50px;" id="validate-btn">Validate</button>
+        <button class="btn" style="margin-bottom: 50px;" id="reject-btn">Reject</button>
+        <button class="btn" style="margin-bottom: 50px;" id="next-round-btn">Next Round</button>
+      </div>
     </div>
   </div>
 

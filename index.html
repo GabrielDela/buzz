@@ -14,7 +14,7 @@
       margin: 0;
       padding: 0;
       width: 100vw;
-      height: 100vh;
+      padding-top: 120px;
 
       display: flex;
 
@@ -38,22 +38,22 @@
     }
 
     input {
-      font-size: 18px;
-      padding: 10px 15px;
-      margin-bottom: 10px;
+      font-size: 48px;
+      padding: 20px 35px;
+      margin-bottom: 60px;
     }
 
     .btn {
-      font-size: 18px;
-      padding: 10px 15px;
+      font-size: 48px;
+      padding: 20px 35px;
 
       background-color: #fbe216;
 
       border: none;
-      box-shadow: 2px 2px 1px black;
+      box-shadow: 4px 4px 0px black;
     }
 
-    #buzz-btn{
+    #buzz-btn {
       font-size: 76px;
       padding: 20px 20px;
       text-align: center;
@@ -66,25 +66,32 @@
       box-shadow: 2px 2px 1px black;
     }
 
+    .title {
+      font-size: 80px;
+    }
+    .title-usr {
+      font-size: 60px;
+    }
   </style>
 </head>
 
 <body id="body">
   <div id="game">
-    <h1>Buzz Game</h1>
-    <h2 id="username-show"></h1>
+    <h1 class="title">Buzz Game</h1>
+    <h2 class="title-usr" id="username-show">
+      </h1>
 
-    <div id="join">
-      <input type="text" id="username" placeholder="Username" />
-      <input type="text" id="code" placeholder="Room Code" />
-      <button class="btn" id="join-btn">Join Room</button>
-    </div>
-    <div id="waiting" style="display:none;">
-      <p>En attente de l'hôte...</p>
-    </div>
-    <div id="gameplay" style="display:none;">
-      <button id="buzz-btn">Buzz!</button>
-    </div>
+      <div id="join">
+        <input type="text" id="username" placeholder="Username" />
+        <input type="text" id="code" placeholder="Room Code" />
+        <button class="btn" id="join-btn">Join Room</button>
+      </div>
+      <div id="waiting" style="display:none;">
+        <p>En attente de l'hôte...</p>
+      </div>
+      <div id="gameplay" style="display:none;">
+        <button id="buzz-btn">Buzz!</button>
+      </div>
   </div>
 
   <script>
@@ -119,7 +126,7 @@
       document.getElementById('body').style.background = "rgb(255, 226, 191)";
       socket.emit('buzz', { uuid, code, username });
     });
-    
+
     socket.on('answered', () => {
       document.getElementById('body').style.background = "rgb(255, 242, 226)";
     });
