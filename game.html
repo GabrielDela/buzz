@@ -3,171 +3,321 @@
 
 <head>
   <title>Buzz Game - Host</title>
-  <script src="/socket.io/socket.io.js"></script>
-
+  <link href='https://fonts.googleapis.com/css?family=Jersey 20' rel='stylesheet'>
   <style>
     * {
-      font-family: 'faktum', Arial, Helvetica, sans-serif;
-      text-transform: uppercase;
+      font-family: 'Jersey 20';
     }
 
     body {
       margin: 0;
-      padding: 0;
-      width: 100vw;
-      padding-top: 200px;
+      padding: 0 20px;
 
       display: flex;
+      flex-direction: column;
+      height: 100vh;
 
-      background-color: rgb(255, 242, 226);
+      background-color: #DCD4F3;
     }
 
-    h1 {
+    .title {
+      color: black;
+      font-size: 96px;
       text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+
+      text-shadow: 4px 4px 0px #00000025;
     }
 
-    #game {
-      margin: auto;
+    .form {
+      height: max-content;
       display: flex;
       flex-direction: column;
     }
 
-    #join {
-      margin: auto;
+    .input-value {
       display: flex;
       flex-direction: column;
+
+      padding-bottom: 20px;
     }
 
-    input {
-      font-size: 48px;
-      padding: 20px 35px;
-      margin-bottom: 60px;
+    .input-value label {
+      font-size: 28px;
+      color: black;
+      padding-bottom: 10px;
+
+      text-shadow: 4px 4px 0px #00000025;
     }
 
-    .btn {
-      font-size: 48px;
-      padding: 20px 35px;
+    .input-value input {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
 
-      background-color: #fbe216;
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+    }
+
+    .btn-submit {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
+      width: 100%;
+
+      margin-top: 40px;
+      margin-bottom: 20px;
+
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+    }
+
+    .btn-start {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
+      width: 100%;
+
+      margin-top: auto;
+      margin-bottom: 20px;
+
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+
+      display: none;
+    }
+
+    #room {
+      display: flex;
+      margin: auto;
+    }
+
+    #waiting {
+      display: none;
+    }
+
+    #board {
+      display: none;
+    }
+
+    .shown-text {
+      color: black;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .hidden-text {
+      color: transparent;
+      text-shadow: transparent;
+    }
+
+    #room-btn {
+      margin: auto;
+      margin-top: 80px;
+      width: 70vw;
+      height: 70vw;
+
+      font-size: 96px;
+      color: white;
+      padding: 15px 20px;
 
       border: none;
-      box-shadow: 4px 4px 0px black;
+      box-shadow: 4px 4px 0px #00000025;
     }
 
-    #create {
-      display: flex;
-      flex-direction: column;
+    .inactive {
+      background-color: black;
     }
 
-    
-    .title {
-      font-size: 80px;
+    .active {
+      background-color: #9E84E8;
     }
 
-    #buzz-queue{
+    .little {
       font-size: 46px;
     }
 
-    .font-xl{
-      font-size: 48px;;
+    .room-code {
+      margin-top: 0;
+      font-size: 36px;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .title-players {
+      margin: 0;
+      font-size: 42px;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .player-name {
+      font-size: 26px;
+      padding-top: 5px;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .name {
+      font-size: 24px;
+      text-align: left;
+      padding-right: 60px;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .score {
+      font-size: 24px;
+      text-align: left;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .table {
+      padding-bottom: 20px;
+    }
+
+    .bottom-buttons {
+      display: none;
+      flex-direction: column;
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
+      width: 100%;
+
+      margin-top: auto;
+      margin-bottom: 20px;
+
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+    }
+
+    .flex {
+      display: flex;
+      gap: 10px;
     }
   </style>
-
 </head>
 
 <body>
-  <div id="game">
-    <h1 class="title">Buzz Game - Host</h1>
-    <div id="create">
-      <input type="text" id="code" placeholder="Room Code" />
-      <button class="btn" id="create-btn">Create Room</button>
+  <section id="base">
+    <h1 class="title">
+      BUZZ
+      <span class="little">Host</span>
+    </h1>
+  </section>
+
+  <section id="room">
+    <button id="room-btn" class="inactive">CREATE ROOM</button>
+  </section>
+
+  <section id="waiting">
+    <h3 id="room-code" class="room-code">Room : xxxxxxx</h3>
+
+    <h2 class="title-players">Players</h2>
+    <ul id="players">
+      <li class="player-name">Feeling lonely...</li>
+    </ul>
+  </section>
+
+  <section id="board">
+    <h3 class="title-players">TOP 5</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="name">Player</th>
+          <th class="score">Points</th>
+        </tr>
+      </thead>
+      <tbody id="players-score">
+      </tbody>
+    </table>
+
+    <h2 class="title-players">Queue</h2>
+    <ul id="queue">
+    </ul>
+  </section>
+
+  <div id="bottom-buttons" class="bottom-buttons">
+    <div class="flex">
+      <input id="validate" class="btn" type="submit" value="VALID" />
+      <input id="reject" class="btn" type="submit" value="INVALID" />
     </div>
-    <div class="font-xl" id="lobby" style="display:none;">
-      <h2>Room Code:</h2>
-      <div id="room-code-display"></div>
-      <h2>Players:</h2>
-      <table class="font-xl" id="players-table">
-        <thead>
-          <tr>
-            <th style="padding-right: 50px;">Username</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody id="players"></tbody>
-      </table>
-      <button class="btn" id="start-btn">Start Game</button>
-    </div>
-    <div id="queue" style="display:none;">
-      <h2 class="font-xl">Queue:</h2>
-      <ul id="buzz-queue"></ul>
-      <div style="display: flex; flex-direction: column;">
-        <button class="btn" style="margin-bottom: 50px;" id="validate-btn">Validate</button>
-        <button class="btn" style="margin-bottom: 50px;" id="reject-btn">Reject</button>
-        <button class="btn" style="margin-bottom: 50px;" id="next-round-btn">Next Round</button>
-      </div>
-    </div>
+    <input id="reset" class="btn" type="submit" value="RESET QUEUE" />
+    <input id="leave" class="btn" type="submit" value="LEAVE" />
   </div>
 
+  <input id="start" class="btn-start" type="submit" value="START GAME" />
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
 
-    document.getElementById('create-btn').addEventListener('click', () => {
-      const code = document.getElementById('code').value;
-      socket.emit('create-room', code);
+    var code;
+
+    document.getElementById('room-btn').addEventListener('click', () => {
+      socket.emit('create-room');
     });
 
-    socket.on('room-created', (code) => {
-      document.getElementById('create').style.display = 'none';
-      document.getElementById('lobby').style.display = 'block';
+    socket.on('room-created', (_code) => {
+      document.getElementById('room').style.display = 'none';
+      document.getElementById('waiting').style.display = 'block';
 
-      // Afficher le code en grand
-      const roomCodeDisplay = document.getElementById('room-code-display');
-      roomCodeDisplay.textContent = code;
+      code = _code;
+
+      document.getElementById('start').style.display = "block";
+      document.getElementById('room-code').textContent = "Room : " + code;
     });
 
     socket.on('update-players', (players) => {
       const playersTable = document.getElementById('players');
+      const playersTableX = document.getElementById('players-score');
+
       let show = players.filter(p => p.active === true);
 
       playersTable.innerHTML = show
+        .map(player => `<li class="player-name">${player.username}</li>`)
+        .join('');
+
+      playersTableX.innerHTML = show
         .map(player => `
-      <tr>
-        <td>${player.username}</td>
-        <td>${player.score}</td>
-      </tr>
-    `)
+        <tr>
+          <th class="name">${player.username}</th>
+          <td class="score">${player.score}</td>
+        </tr>`)
         .join('');
     });
 
-
-    document.getElementById('start-btn').addEventListener('click', () => {
-      const code = document.getElementById('code').value;
+    document.getElementById('start').addEventListener('click', () => {
       socket.emit('start-game', code);
-      document.getElementById('queue').style.display = 'block';
-      document.getElementById('start-btn').style.display = 'none';
+    });
 
-      
+    socket.on('game-started', (players) => {
+      document.getElementById('start').style.display = "none";
+      document.getElementById('waiting').style.display = "none";
+      document.getElementById('board').style.display = "block";
+      document.getElementById('bottom-buttons').style.display = "flex";
     });
 
     socket.on('update-queue', (queue) => {
-      const queueList = document.getElementById('buzz-queue');
-      queueList.innerHTML = queue.map(q => `<li>${q.username}</li>`).join('');
+      const queueList = document.getElementById('queue');
+      queueList.innerHTML = queue.map(q => `<li class="player-name">${q.username}</li>`).join('');
     });
 
-    document.getElementById('validate-btn').addEventListener('click', () => {
-      const code = document.getElementById('code').value;
+    document.getElementById('validate').addEventListener('click', () => {
       socket.emit('validate', { code, success: true });
     });
 
-    document.getElementById('reject-btn').addEventListener('click', () => {
-      const code = document.getElementById('code').value;
+    document.getElementById('reject').addEventListener('click', () => {
       socket.emit('validate', { code, success: false });
     });
 
-    document.getElementById('next-round-btn').addEventListener('click', () => {
-      const code = document.getElementById('code').value;
-      socket.emit('next-round', code);
+    document.getElementById('reset').addEventListener('click', () => {
+      socket.emit('reset', code);
+    });
+
+    document.getElementById('leave').addEventListener('click', () => {
+      location.reload();
     });
   </script>
 </body>

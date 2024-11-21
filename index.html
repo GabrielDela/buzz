@@ -3,97 +3,195 @@
 
 <head>
   <title>Buzz Game</title>
-  <script src="/socket.io/socket.io.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Jersey 20' rel='stylesheet'>
   <style>
     * {
-      font-family: 'faktum', Arial, Helvetica, sans-serif;
-      text-transform: uppercase;
+      font-family: 'Jersey 20';
     }
 
     body {
       margin: 0;
-      padding: 0;
-      width: 100vw;
-      padding-top: 120px;
+      padding: 0 20px;
 
       display: flex;
+      flex-direction: column;
+      height: 100vh;
 
-      background-color: rgb(255, 242, 226);
+      background-color: #DCD4F3;
     }
 
-    h1 {
+    .title {
+      color: black;
+      font-size: 96px;
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .form {
+      height: max-content;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-value {
+      display: flex;
+      flex-direction: column;
+
+      padding-bottom: 20px;
+    }
+
+    .input-value label {
+      font-size: 28px;
+      color: black;
+      padding-bottom: 10px;
+
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .input-value input {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
+
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+    }
+
+    .btn-submit {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
+      width: 100%;
+
+      margin-top: 40px;
+      margin-bottom: 20px;
+
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+    }
+
+    .btn-leave {
+      font-size: 28px;
+      color: white;
+      padding: 15px 20px;
+      width: 100%;
+
+      margin-top: auto;
+      margin-bottom: 20px;
+
+      background-color: black;
+      box-shadow: 4px 4px 0px #00000025;
+
+      display: none;
+    }
+
+    #login {
+      display: block;
+    }
+
+    #waiting {
+      display: none;
+      padding-top: 100px;
+    }
+
+    #waiting h3 {
+      font-size: 40px;
+      margin: 0;
+      padding: 0;
+
       text-align: center;
     }
 
     #game {
-      margin: auto;
-      display: flex;
-      flex-direction: column;
+      height: 70vh;
+      display: none;
     }
 
-    #join {
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    input {
-      font-size: 48px;
-      padding: 20px 35px;
-      margin-bottom: 60px;
-    }
-
-    .btn {
-      font-size: 48px;
-      padding: 20px 35px;
-
-      background-color: #fbe216;
-
-      border: none;
-      box-shadow: 4px 4px 0px black;
-    }
-
-    #buzz-btn {
-      font-size: 76px;
-      padding: 20px 20px;
+    #title-username {
+      font-size: 40px;
       text-align: center;
-      width: 400px;
-      height: 400px;
 
-      background-color: #fbe216;
+      padding-top: 20px;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    #score {
+      font-size: 32px;
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .shown-text {
+      color: black;
+      text-shadow: 4px 4px 0px #00000025;
+    }
+
+    .hidden-text {
+      color: transparent;
+      text-shadow: transparent;
+    }
+
+    #buzz {
+      margin: auto;
+      margin-top: 80px;
+      width: 70vw;
+      height: 70vw;
+
+      font-size: 96px;
+      color: white;
+      padding: 15px 20px;
 
       border: none;
-      box-shadow: 2px 2px 1px black;
+      box-shadow: 4px 4px 0px #00000025;
     }
 
-    .title {
-      font-size: 80px;
+    .inactive {
+      background-color: black;
     }
-    .title-usr {
-      font-size: 60px;
+
+    .active {
+      background-color: #9E84E8;
     }
   </style>
 </head>
 
-<body id="body">
-  <div id="game">
-    <h1 class="title">Buzz Game</h1>
-    <h2 class="title-usr" id="username-show">
-      </h1>
+<body>
+  <section id="base">
+    <h3 id="title-username" class="hidden-text">USERNAME</h3>
+    <h1 class="title">BUZZ</h1>
+    <h3 id="score" class="hidden-text">Score : 0</h3>
+  </section>
 
-      <div id="join">
-        <input type="text" id="username" placeholder="Username" />
-        <input type="text" id="code" placeholder="Room Code" />
-        <button class="btn" id="join-btn">Join Room</button>
-      </div>
-      <div id="waiting" style="display:none;">
-        <p>En attente de l'hôte...</p>
-      </div>
-      <div id="gameplay" style="display:none;">
-        <button id="buzz-btn">Buzz!</button>
-      </div>
-  </div>
+  <section id="login">
+    <div class="input-value">
+      <label>USERNAME</label>
+      <input id="username" type="text" placeholder="XXXXXX" />
+    </div>
 
+    <div class="input-value">
+      <label>ROOM CODE</label>
+      <input id="code" type="text" placeholder="XXXXXX" />
+    </div>
+
+    <input id="submit" class="btn-submit" type="submit" value="LOG IN" />
+  </section>
+
+  <section id="waiting">
+    <h3>Waiting</h3>
+    <h3>for host to start ...</h3>
+  </section>
+
+  <section id="game">
+    <button id="buzz" class="inactive">BUZZ</button>
+  </section>
+
+  <input id="leave" class="btn-leave" type="submit" value="LEAVE" />
+
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     var username;
     var code;
@@ -102,45 +200,70 @@
     const uuid = localStorage.getItem('uuid') ?? uuidv4();
     localStorage.setItem('uuid', uuid);
 
-    document.getElementById('join-btn').addEventListener('click', () => {
+    document.getElementById('submit').addEventListener('click', () => {
       username = document.getElementById('username').value;
       code = document.getElementById('code').value;
-
-      document.getElementById('username-show').textContent = username;
 
       socket.emit('join-room', { uuid, username, code });
     });
 
+    document.getElementById('leave').addEventListener('click', () => {
+      location.reload();
+    });
+
     socket.on('waiting-for-host', () => {
-      document.getElementById('join').style.display = 'none';
+      document.getElementById('title-username').classList = "shown-text";
+      document.getElementById('title-username').textContent = username;
+
+      document.getElementById('score').classList = "shown-text";
+      document.getElementById('score').textContent = "Score : 0";
+
+      document.getElementById('login').style.display = 'none';
       document.getElementById('waiting').style.display = 'block';
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('leave').style.display = 'block';
     });
 
     socket.on('game-started', () => {
-      document.getElementById('join').style.display = 'none';
+      document.getElementById('title-username').classList = "shown-text";
+      document.getElementById('title-username').textContent = username;
+
+      document.getElementById('score').classList = "shown-text";
+      document.getElementById('score').textContent = "Score : #?";
+
+      document.getElementById('login').style.display = 'none';
       document.getElementById('waiting').style.display = 'none';
-      document.getElementById('gameplay').style.display = 'block';
+      document.getElementById('game').style.display = 'flex';
+      document.getElementById('leave').style.display = 'block';
     });
 
-    document.getElementById('buzz-btn').addEventListener('click', () => {
-      document.getElementById('body').style.background = "rgb(255, 226, 191)";
+    document.getElementById('buzz').addEventListener('click', () => {
+      document.getElementById('buzz').classList = "active";
       socket.emit('buzz', { uuid, code, username });
     });
 
-    socket.on('answered', () => {
-      document.getElementById('body').style.background = "rgb(255, 242, 226)";
+    socket.on('answered', (score) => {
+      document.getElementById('score').textContent = "Score : " + score;
+      document.getElementById('buzz').classList = "inactive";
     });
 
-    socket.on('new-round', () => {
-      document.getElementById('body').style.background = "rgb(255, 242, 226)";
+    socket.on('reset', () => {
+      document.getElementById('buzz').classList = "inactive";
     });
 
     socket.on('game-ended', () => {
-      document.getElementById('username-show').textContent = "";
-      document.getElementById('gameplay').style.display = 'none';
-      document.getElementById('join').style.display = 'flex';
+      document.getElementById('title-username').classList = "";
+      document.getElementById('score').classList = "";
+
+      document.getElementById('login').style.display = 'block';
       document.getElementById('waiting').style.display = 'none';
+      document.getElementById('game').style.display = 'none';
+
       alert("La partie est terminée par l'hôte.");
+    });
+
+    socket.on('room-error', (err) => {
+      alert(err);
     });
 
     function uuidv4() {

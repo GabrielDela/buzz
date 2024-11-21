@@ -29,21 +29,23 @@ io.on('connection', (socket) => {
                 delete rooms[code];
             } else {
 
-                let leaver = room.players.filter(p => p.socketId === socket.id)[0];
-                room.players = room.players.filter(p => p.socketId !== socket.id);
-                leaver.active = false;
-                room.players.push(leaver);
+                try {
+                    let leaver = room.players.filter(p => p.socketId === socket.id)[0];
+                    room.players = room.players.filter(p => p.socketId !== socket.id);
+                    leaver.active = false;
+                    room.players.push(leaver);
 
-                console.log(room.players)
-
-                io.to(code).emit('update-players', room.players);
+                    io.to(code).emit('update-players', room.players);
+                }
+                catch (e) { }
             }
         }
         console.log(`User ${socket.id} disconnected.`);
     });
 
-    // Créer un salon
-    socket.on('create-room', (code) => {
+    socket.on('create-room', () => {
+        const code = "B" + generateSixDigitNumber();
+
         if (rooms[code]) {
             socket.emit('room-error', 'Room already exists.');
             return;
@@ -65,13 +67,8 @@ io.on('connection', (socket) => {
         let index = room.players.findIndex(p => p.uuid === uuid);
 
         if (index === -1) {
-            // Le joueur n'existe pas dans la liste, on l'ajoute
             room.players.push({ uuid: uuid, socketId: socket.id, username, score: 0, active: true });
-
-            // Envoyer la liste des joueurs mise à jour
-            socket.emit('waiting-for-host');
         } else {
-            // Le joueur existe déjà, on met à jour ses informations
             let player = room.players[index];
             player.socketId = socket.id;
             player.username = username;
@@ -83,24 +80,28 @@ io.on('connection', (socket) => {
         if (room.started) {
             socket.emit('game-started');
         }
+        else {
+            socket.emit('waiting-for-host');
+        }
 
-        // Ajouter le joueur avec un score initial
         io.to(code).emit('update-players', room.players);
         socket.join(code);
     });
 
-    // Démarrer la partie
     socket.on('start-game', (code) => {
         const room = rooms[code];
 
+        console.log(room)
+
         if (room && room.master === socket.id) {
             rooms[code].started = true;
+
+            console.log(rooms[code].started)
 
             io.to(code).emit('game-started');
         }
     });
 
-    // Joueurs buzzent
     socket.on('buzz', (request) => {
         const room = rooms[request.code];
         if (room) {
@@ -127,21 +128,33 @@ io.on('connection', (socket) => {
                 }
             }
 
-            io.to(playerData.socketId).emit('answered');
+            io.to(playerData.socketId).emit('answered', playerData.score);
         }
     });
 
-    // Nouvelle manche
-    socket.on('next-round', (code) => {
+    socket.on('reset', (code) => {
         const room = rooms[code];
         if (room && room.master === socket.id) {
             room.queue = [];
             io.to(room.master).emit('update-queue', room.queue);
-            io.to(code).emit('new-round');
+            io.to(code).emit('reset');
         }
+    });
+
+    socket.on('leave', () => {
+        let user = room.players.filter(p => p.socketId === socket.id)[0];
+        room.players = room.players.filter(p => p.socketId !== socket.id);
+        user.active = false;
+        room.players.push(user);
+
+        io.to(code).emit('update-players', room.players);
     });
 });
 
 server.listen(3000, () => {
     console.log('server running at http://localhost:3000');
 });
+
+function generateSixDigitNumber() {
+    return Math.floor(100000 + Math.random() * 900000);
+}
